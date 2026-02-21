@@ -117,11 +117,13 @@ export async function googleCallback(req, res, next) {
         name,
         email,
         googleId,
-        avatar: ""
+        avatar: "",
+        last_login_at: new Date()
       });
     } else {
       user.name = name || user.name;
       user.googleId = googleId || user.googleId;
+      user.last_login_at = new Date();
       await user.save();
     }
 

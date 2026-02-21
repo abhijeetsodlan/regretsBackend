@@ -11,6 +11,7 @@ import sanctumRoutes from "./routes/sanctum.routes.js";
 import notificationRoutes from "./routes/notification.routes.js";
 import feedbackRoutes from "./routes/feedback.routes.js";
 import meRoutes from "./routes/me.routes.js";
+import adminRoutes from "./routes/admin.routes.js";
 import { notFound, errorHandler } from "./middlewares/errorHandler.js";
 
 export function createServer() {
@@ -43,6 +44,7 @@ export function createServer() {
   app.use("/api", notificationRoutes);
   app.use("/api", feedbackRoutes);
   app.use("/api", meRoutes);
+  app.use("/api", adminRoutes);
   app.use("/api/items", itemRoutes);
   app.use(notFound);
   app.use(errorHandler);

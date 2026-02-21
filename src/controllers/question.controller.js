@@ -50,22 +50,32 @@ async function resolveCategoryFromInput(rawCategoryId, rawCategoryName) {
   });
 }
 
-async function mapQuestionsWithLikes(questions, currentUser) {
-  const questionIds = questions.map((question) => question._id);
+async function buildQuestionMetrics(questionIds, currentUser) {
   if (questionIds.length === 0) {
-    return [];
+    return {
+      likeCountMap: new Map(),
+      replyCountMap: new Map(),
+      saveCountMap: new Map(),
+      likedQuestionIdSet: new Set(),
+      savedQuestionIdSet: new Set()
+    };
   }
 
   const likeCounts = await Like.aggregate([
     { $match: { question: { $in: questionIds } } },
     { $group: { _id: "$question", count: { $sum: 1 } } }
   ]);
-  const countMap = new Map(likeCounts.map((entry) => [entry._id.toString(), entry.count]));
+  const likeCountMap = new Map(likeCounts.map((entry) => [entry._id.toString(), entry.count]));
   const replyCounts = await Comment.aggregate([
     { $match: { question: { $in: questionIds } } },
     { $group: { _id: "$question", count: { $sum: 1 } } }
   ]);
   const replyCountMap = new Map(replyCounts.map((entry) => [entry._id.toString(), entry.count]));
+  const saveCounts = await SavedPost.aggregate([
+    { $match: { question: { $in: questionIds } } },
+    { $group: { _id: "$question", count: { $sum: 1 } } }
+  ]);
+  const saveCountMap = new Map(saveCounts.map((entry) => [entry._id.toString(), entry.count]));
 
   let likedQuestionIdSet = new Set();
   let savedQuestionIdSet = new Set();
@@ -87,14 +97,123 @@ async function mapQuestionsWithLikes(questions, currentUser) {
     savedQuestionIdSet = new Set(savedRows.map((row) => row.question.toString()));
   }
 
+  return {
+    likeCountMap,
+    replyCountMap,
+    saveCountMap,
+    likedQuestionIdSet,
+    savedQuestionIdSet
+  };
+}
+
+async function mapQuestionsWithMetrics(questions, currentUser) {
+  if (questions.length === 0) {
+    return [];
+  }
+
+  const questionIds = questions.map((question) => question._id);
+  const {
+    likeCountMap,
+    replyCountMap,
+    likedQuestionIdSet,
+    savedQuestionIdSet
+  } = await buildQuestionMetrics(questionIds, currentUser);
+
   return questions.map((question) =>
     toQuestionDTO(question, {
-      likesCount: countMap.get(question._id.toString()) || 0,
+      likesCount: likeCountMap.get(question._id.toString()) || 0,
       likedByUser: likedQuestionIdSet.has(question._id.toString()),
       isSaved: savedQuestionIdSet.has(question._id.toString()),
-      repliesCount: replyCountMap.get(question._id.toString()) || 0
+      repliesCount: replyCountMap.get(question._id.toString()) || 0,
+      sharesCount: Number(question.shares_count || 0)
     })
   );
+}
+
+async function getTopRegretOfTheDay(currentUser) {
+  const startOfDay = new Date();
+  startOfDay.setHours(0, 0, 0, 0);
+
+  const todaysQuestions = await Question.find({ createdAt: { $gte: startOfDay } })
+    .populate("user", "name email avatar")
+    .lean();
+
+  if (todaysQuestions.length === 0) {
+    return null;
+  }
+
+  const questionIds = todaysQuestions.map((question) => question._id);
+  const {
+    likeCountMap,
+    replyCountMap,
+    saveCountMap,
+    likedQuestionIdSet,
+    savedQuestionIdSet
+  } = await buildQuestionMetrics(questionIds, currentUser);
+
+  let winner = null;
+  let winnerScore = -1;
+  let winnerLikes = -1;
+  let winnerReplies = -1;
+  let winnerSaves = -1;
+  let winnerShares = -1;
+
+  todaysQuestions.forEach((question) => {
+    const key = question._id.toString();
+    const likes = likeCountMap.get(key) || 0;
+    const replies = replyCountMap.get(key) || 0;
+    const saves = saveCountMap.get(key) || 0;
+    const shares = Number(question.shares_count || 0);
+    const score = (likes + replies + saves + shares) / 4;
+
+    const shouldReplace =
+      score > winnerScore ||
+      (score === winnerScore && likes > winnerLikes) ||
+      (score === winnerScore && likes === winnerLikes && replies > winnerReplies) ||
+      (score === winnerScore && likes === winnerLikes && replies === winnerReplies && saves > winnerSaves) ||
+      (score === winnerScore &&
+        likes === winnerLikes &&
+        replies === winnerReplies &&
+        saves === winnerSaves &&
+        shares > winnerShares) ||
+      (score === winnerScore &&
+        likes === winnerLikes &&
+        replies === winnerReplies &&
+        saves === winnerSaves &&
+        shares === winnerShares &&
+        new Date(question.createdAt).getTime() > new Date(winner?.createdAt || 0).getTime());
+
+    if (shouldReplace) {
+      winner = question;
+      winnerScore = score;
+      winnerLikes = likes;
+      winnerReplies = replies;
+      winnerSaves = saves;
+      winnerShares = shares;
+    }
+  });
+
+  if (!winner) {
+    return null;
+  }
+
+  const winnerId = winner._id.toString();
+  return {
+    question: toQuestionDTO(winner, {
+      likesCount: likeCountMap.get(winnerId) || 0,
+      likedByUser: likedQuestionIdSet.has(winnerId),
+      isSaved: savedQuestionIdSet.has(winnerId),
+      repliesCount: replyCountMap.get(winnerId) || 0,
+      sharesCount: Number(winner.shares_count || 0)
+    }),
+    metrics: {
+      likes: likeCountMap.get(winnerId) || 0,
+      replies: replyCountMap.get(winnerId) || 0,
+      saved: saveCountMap.get(winnerId) || 0,
+      shares: Number(winner.shares_count || 0),
+      average_score: Number(winnerScore.toFixed(2))
+    }
+  };
 }
 
 export async function listQuestions(req, res, next) {
@@ -105,8 +224,11 @@ export async function listQuestions(req, res, next) {
       .sort({ createdAt: -1 })
       .lean();
 
-    const payload = await mapQuestionsWithLikes(questions, currentUser);
-    res.json({ questions: payload });
+    const [payload, topRegretOfTheDay] = await Promise.all([
+      mapQuestionsWithMetrics(questions, currentUser),
+      getTopRegretOfTheDay(currentUser)
+    ]);
+    res.json({ questions: payload, top_regret_of_day: topRegretOfTheDay });
   } catch (err) {
     next(err);
   }
@@ -137,7 +259,7 @@ export async function listQuestionsByCategory(req, res, next) {
       .sort({ createdAt: -1 })
       .lean();
 
-    const payload = await mapQuestionsWithLikes(questions, currentUser);
+    const payload = await mapQuestionsWithMetrics(questions, currentUser);
     res.json({ questions: payload });
   } catch (err) {
     next(err);
@@ -167,7 +289,13 @@ export async function getQuestion(req, res, next) {
       : false;
 
     res.json({
-      question: toQuestionDTO(question, { likesCount, likedByUser, isSaved, repliesCount })
+      question: toQuestionDTO(question, {
+        likesCount,
+        likedByUser,
+        isSaved,
+        repliesCount,
+        sharesCount: Number(question.shares_count || 0)
+      })
     });
   } catch (err) {
     next(err);
@@ -249,8 +377,37 @@ export async function updateQuestion(req, res, next) {
         likesCount,
         likedByUser: false,
         isSaved: false,
-        repliesCount
+        repliesCount,
+        sharesCount: Number(hydrated?.shares_count || 0)
       })
+    });
+  } catch (err) {
+    next(err);
+  }
+}
+
+export async function trackQuestionShare(req, res, next) {
+  try {
+    const questionId = toObjectId(req.params.id);
+    if (!questionId) {
+      return res.status(400).json({ message: "invalid id" });
+    }
+
+    const updated = await Question.findByIdAndUpdate(
+      questionId,
+      { $inc: { shares_count: 1 } },
+      { new: true }
+    )
+      .select("_id shares_count")
+      .lean();
+
+    if (!updated) {
+      return res.status(404).json({ message: "not found" });
+    }
+
+    res.json({
+      id: updated._id.toString(),
+      shares_count: Number(updated.shares_count || 0)
     });
   } catch (err) {
     next(err);

@@ -15,7 +15,8 @@ export function toQuestionDTO(questionDoc, options = {}) {
     likesCount = 0,
     likedByUser = false,
     isSaved = false,
-    repliesCount = 0
+    repliesCount = 0,
+    sharesCount = 0
   } = options;
 
   const user = questionDoc.is_anonymous
@@ -32,7 +33,8 @@ export function toQuestionDTO(questionDoc, options = {}) {
     likes_count: likesCount,
     liked_by_user: likedByUser,
     is_saved: isSaved,
-    replies_count: repliesCount
+    replies_count: repliesCount,
+    shares_count: sharesCount
   };
 }
 

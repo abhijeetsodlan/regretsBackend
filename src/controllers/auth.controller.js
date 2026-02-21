@@ -117,14 +117,11 @@ export async function googleCallback(req, res, next) {
         name,
         email,
         googleId,
-        avatar: profile.picture || ""
+        avatar: ""
       });
     } else {
       user.name = name || user.name;
       user.googleId = googleId || user.googleId;
-      if (profile.picture) {
-        user.avatar = profile.picture;
-      }
       await user.save();
     }
 

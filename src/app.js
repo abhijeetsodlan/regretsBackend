@@ -8,6 +8,9 @@ import commentRoutes from "./routes/comment.routes.js";
 import profileRoutes from "./routes/profile.routes.js";
 import sessionRoutes from "./routes/session.routes.js";
 import sanctumRoutes from "./routes/sanctum.routes.js";
+import notificationRoutes from "./routes/notification.routes.js";
+import feedbackRoutes from "./routes/feedback.routes.js";
+import meRoutes from "./routes/me.routes.js";
 import { notFound, errorHandler } from "./middlewares/errorHandler.js";
 
 export function createServer() {
@@ -37,6 +40,9 @@ export function createServer() {
   app.use("/api", commentRoutes);
   app.use("/api", profileRoutes);
   app.use("/api", sessionRoutes);
+  app.use("/api", notificationRoutes);
+  app.use("/api", feedbackRoutes);
+  app.use("/api", meRoutes);
   app.use("/api/items", itemRoutes);
   app.use(notFound);
   app.use(errorHandler);

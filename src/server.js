@@ -1,6 +1,8 @@
 import dotenv from "dotenv";
+import http from "http";
 import { connectDB } from "./config/db.js";
 import { createServer } from "./app.js";
+import { attachRealtime } from "./realtime/realtime.js";
 
 dotenv.config();
 
@@ -9,7 +11,10 @@ const port = process.env.PORT ? Number(process.env.PORT) : 3000;
 async function bootstrap() {
   await connectDB();
   const app = createServer();
-  app.listen(port, () => {
+  const httpServer = http.createServer(app);
+  attachRealtime(httpServer);
+
+  httpServer.listen(port, () => {
     console.log(`API listening on http://localhost:${port}`);
   });
 }

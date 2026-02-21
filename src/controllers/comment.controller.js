@@ -1,6 +1,7 @@
 import mongoose from "mongoose";
 import { Comment } from "../models/comment.model.js";
 import { Question } from "../models/question.model.js";
+import { notifyOnComment } from "../services/notification.service.js";
 import { toCommentDTO } from "../utils/serializers.js";
 
 function toObjectId(value) {
@@ -15,7 +16,7 @@ export async function listCommentsForQuestion(req, res, next) {
     }
 
     const comments = await Comment.find({ question: questionId })
-      .populate("user", "name email")
+      .populate("user", "name email avatar")
       .sort({ createdAt: 1 })
       .lean();
 
@@ -44,6 +45,9 @@ export async function createComment(req, res, next) {
       return res.status(404).json({ message: "question not found" });
     }
 
+    const participantUserIds = await Comment.find({ question: questionId })
+      .distinct("user");
+
     const comment = await Comment.create({
       title: title.trim(),
       question: questionId,
@@ -51,10 +55,17 @@ export async function createComment(req, res, next) {
       is_anonymous: isAnonymous
     });
 
-    const hydrated = await Comment.findById(comment._id).populate("user", "name email").lean();
+    await notifyOnComment({
+      question,
+      actor: req.user,
+      commentId: comment._id,
+      commentTitle: comment.title,
+      participantUserIds
+    });
+
+    const hydrated = await Comment.findById(comment._id).populate("user", "name email avatar").lean();
     res.status(201).json({ comment: toCommentDTO(hydrated) });
   } catch (err) {
     next(err);
   }
 }
-

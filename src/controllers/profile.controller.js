@@ -23,6 +23,7 @@ export async function myProfile(req, res, next) {
       data: {
         name: req.user.name,
         email: req.user.email,
+        avatar: req.user.avatar || "",
         uploaded_posts: uploadedPosts.map((post) => ({
           id: post._id.toString(),
           title: post.title
@@ -34,4 +35,3 @@ export async function myProfile(req, res, next) {
     next(err);
   }
 }
-

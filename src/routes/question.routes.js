@@ -4,6 +4,7 @@ import {
   getQuestion,
   listQuestions,
   listQuestionsByCategory,
+  trackQuestionShare,
   toggleLikeQuestion,
   updateQuestion
 } from "../controllers/question.controller.js";
@@ -17,5 +18,6 @@ router.get("/questions/:id", optionalAuth, getQuestion);
 router.post("/question", requireAuth, createQuestion);
 router.patch("/questions/:id", requireAuth, updateQuestion);
 router.post("/questions/:id/like", requireAuth, toggleLikeQuestion);
+router.post("/questions/:id/share", optionalAuth, trackQuestionShare);
 
 export default router;

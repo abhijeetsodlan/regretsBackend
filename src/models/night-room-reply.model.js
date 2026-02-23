@@ -1,4 +1,4 @@
-import mongoose from "mongoose";
+const mongoose = require("mongoose");
 
 const NightRoomReplySchema = new mongoose.Schema(
   {
@@ -12,4 +12,8 @@ const NightRoomReplySchema = new mongoose.Schema(
 
 NightRoomReplySchema.index({ post: 1, createdAt: 1 });
 
-export const NightRoomReply = mongoose.model("NightRoomReply", NightRoomReplySchema);
+const NightRoomReply = mongoose.model("NightRoomReply", NightRoomReplySchema);
+
+module.exports = { NightRoomReply };
+
+

@@ -1,11 +1,11 @@
-import { Router } from "express";
-import {
+const { Router } = require("express");
+const {
   clearNotifications,
   listNotifications,
   markAllNotificationsRead,
   markNotificationRead
-} from "../controllers/notification.controller.js";
-import { requireAuth } from "../middlewares/auth.js";
+} = require("../controllers/notification.controller.js");
+const { requireAuth } = require("../middlewares/auth.js");
 
 const router = Router();
 
@@ -14,4 +14,6 @@ router.post("/notifications/:id/read", requireAuth, markNotificationRead);
 router.post("/notifications/read-all", requireAuth, markAllNotificationsRead);
 router.post("/notifications/clear", requireAuth, clearNotifications);
 
-export default router;
+module.exports = router;
+
+

@@ -1,4 +1,4 @@
-import mongoose from "mongoose";
+const mongoose = require("mongoose");
 
 const NightRoomSettingSchema = new mongoose.Schema(
   {
@@ -13,4 +13,8 @@ const NightRoomSettingSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-export const NightRoomSetting = mongoose.model("NightRoomSetting", NightRoomSettingSchema);
+const NightRoomSetting = mongoose.model("NightRoomSetting", NightRoomSettingSchema);
+
+module.exports = { NightRoomSetting };
+
+

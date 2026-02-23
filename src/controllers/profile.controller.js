@@ -1,7 +1,7 @@
-import { Question } from "../models/question.model.js";
-import { SavedPost } from "../models/saved-post.model.js";
+const { Question } = require("../models/question.model.js");
+const { SavedPost } = require("../models/saved-post.model.js");
 
-export async function myProfile(req, res, next) {
+async function myProfile(req, res, next) {
   try {
     const uploadedPosts = await Question.find({ user: req.user._id })
       .sort({ createdAt: -1 })
@@ -35,3 +35,7 @@ export async function myProfile(req, res, next) {
     next(err);
   }
 }
+
+module.exports = { myProfile };
+
+

@@ -1,4 +1,4 @@
-import { Category } from "../models/category.model.js";
+const { Category } = require("../models/category.model.js");
 
 const DEFAULT_CATEGORIES = [
   { category_id: 1001, name: "Love", slug: "love" },
@@ -9,7 +9,7 @@ const DEFAULT_CATEGORIES = [
   { category_id: 1006, name: "Life", slug: "life" }
 ];
 
-export async function ensureDefaultCategories() {
+async function ensureDefaultCategories() {
   const count = await Category.countDocuments();
   if (count > 0) {
     await backfillCategoryIds();
@@ -19,7 +19,7 @@ export async function ensureDefaultCategories() {
   await Category.insertMany(DEFAULT_CATEGORIES);
 }
 
-export function slugifyCategoryName(name) {
+function slugifyCategoryName(name) {
   return name
     .trim()
     .toLowerCase()
@@ -44,3 +44,7 @@ async function backfillCategoryIds() {
     nextId += 1;
   }
 }
+
+module.exports = { ensureDefaultCategories, slugifyCategoryName };
+
+

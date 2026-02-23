@@ -1,4 +1,4 @@
-import mongoose from "mongoose";
+const mongoose = require("mongoose");
 
 const SavedPostSchema = new mongoose.Schema(
   {
@@ -10,5 +10,8 @@ const SavedPostSchema = new mongoose.Schema(
 
 SavedPostSchema.index({ question: 1, user: 1 }, { unique: true });
 
-export const SavedPost = mongoose.model("SavedPost", SavedPostSchema);
+const SavedPost = mongoose.model("SavedPost", SavedPostSchema);
+
+module.exports = { SavedPost };
+
 

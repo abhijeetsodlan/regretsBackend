@@ -1,10 +1,12 @@
-import { Router } from "express";
-import { logout, savePost } from "../controllers/session.controller.js";
-import { requireAuth } from "../middlewares/auth.js";
+const { Router } = require("express");
+const { logout, savePost } = require("../controllers/session.controller.js");
+const { requireAuth } = require("../middlewares/auth.js");
 
 const router = Router();
 
 router.post("/logout", logout);
 router.post("/savepost", requireAuth, savePost);
 
-export default router;
+module.exports = router;
+
+

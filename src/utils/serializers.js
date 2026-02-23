@@ -1,4 +1,4 @@
-export function toPublicUser(userDoc) {
+function toPublicUser(userDoc) {
   if (!userDoc) {
     return null;
   }
@@ -10,7 +10,7 @@ export function toPublicUser(userDoc) {
   };
 }
 
-export function toQuestionDTO(questionDoc, options = {}) {
+function toQuestionDTO(questionDoc, options = {}) {
   const {
     likesCount = 0,
     likedByUser = false,
@@ -38,7 +38,7 @@ export function toQuestionDTO(questionDoc, options = {}) {
   };
 }
 
-export function toCommentDTO(commentDoc) {
+function toCommentDTO(commentDoc) {
   const user = commentDoc.is_anonymous
     ? null
     : toPublicUser(commentDoc.user);
@@ -52,7 +52,7 @@ export function toCommentDTO(commentDoc) {
   };
 }
 
-export function toNightRoomPostDTO(postDoc, options = {}) {
+function toNightRoomPostDTO(postDoc, options = {}) {
   const {
     likesCount = 0,
     repliesCount = 0,
@@ -75,7 +75,7 @@ export function toNightRoomPostDTO(postDoc, options = {}) {
   };
 }
 
-export function toNightRoomReplyDTO(replyDoc) {
+function toNightRoomReplyDTO(replyDoc) {
   const user = replyDoc.is_anonymous
     ? null
     : toPublicUser(replyDoc.user);
@@ -88,3 +88,7 @@ export function toNightRoomReplyDTO(replyDoc) {
     created_at: replyDoc.createdAt
   };
 }
+
+module.exports = { toPublicUser, toQuestionDTO, toCommentDTO, toNightRoomPostDTO, toNightRoomReplyDTO };
+
+

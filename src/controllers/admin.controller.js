@@ -1,12 +1,12 @@
-import mongoose from "mongoose";
-import { Comment } from "../models/comment.model.js";
-import { Feedback } from "../models/feedback.model.js";
-import { Like } from "../models/like.model.js";
-import { Notification } from "../models/notification.model.js";
-import { Question } from "../models/question.model.js";
-import { SavedPost } from "../models/saved-post.model.js";
-import { User } from "../models/user.model.js";
-import { emitNotificationToUser } from "../realtime/realtime.js";
+const mongoose = require("mongoose");
+const { Comment } = require("../models/comment.model.js");
+const { Feedback } = require("../models/feedback.model.js");
+const { Like } = require("../models/like.model.js");
+const { Notification } = require("../models/notification.model.js");
+const { Question } = require("../models/question.model.js");
+const { SavedPost } = require("../models/saved-post.model.js");
+const { User } = require("../models/user.model.js");
+const { emitNotificationToUser } = require("../realtime/realtime.js");
 
 const ADMIN_EMAIL = "abhijeetsodlan7@gmail.com";
 
@@ -27,14 +27,14 @@ function getPagination(query) {
   return { page, limit, skip };
 }
 
-export function requireAdmin(req, res, next) {
+function requireAdmin(req, res, next) {
   if (!isAdmin(req.user)) {
     return res.status(403).json({ message: "Forbidden" });
   }
   return next();
 }
 
-export async function listAdminUsers(req, res, next) {
+async function listAdminUsers(req, res, next) {
   try {
     const search = (req.query?.search || "").trim();
     const { page, limit, skip } = getPagination(req.query);
@@ -95,7 +95,7 @@ export async function listAdminUsers(req, res, next) {
   }
 }
 
-export async function getAdminUserPosts(req, res, next) {
+async function getAdminUserPosts(req, res, next) {
   try {
     const userId = toObjectId(req.params.id);
     if (!userId) {
@@ -130,7 +130,7 @@ export async function getAdminUserPosts(req, res, next) {
   }
 }
 
-export async function getAdminQuestionReplies(req, res, next) {
+async function getAdminQuestionReplies(req, res, next) {
   try {
     const questionId = toObjectId(req.params.id);
     if (!questionId) {
@@ -181,7 +181,7 @@ export async function getAdminQuestionReplies(req, res, next) {
   }
 }
 
-export async function listAdminQuestions(req, res, next) {
+async function listAdminQuestions(req, res, next) {
   try {
     const search = (req.query?.search || "").trim();
     const { page, limit, skip } = getPagination(req.query);
@@ -226,7 +226,7 @@ export async function listAdminQuestions(req, res, next) {
   }
 }
 
-export async function listAdminComments(req, res, next) {
+async function listAdminComments(req, res, next) {
   try {
     const search = (req.query?.search || "").trim();
     const { page, limit, skip } = getPagination(req.query);
@@ -278,7 +278,7 @@ export async function listAdminComments(req, res, next) {
   }
 }
 
-export async function deleteAdminQuestion(req, res, next) {
+async function deleteAdminQuestion(req, res, next) {
   try {
     const questionId = toObjectId(req.params.id);
     if (!questionId) {
@@ -294,7 +294,7 @@ export async function deleteAdminQuestion(req, res, next) {
   }
 }
 
-export async function deleteAdminComment(req, res, next) {
+async function deleteAdminComment(req, res, next) {
   try {
     const commentId = toObjectId(req.params.id);
     if (!commentId) {
@@ -309,7 +309,7 @@ export async function deleteAdminComment(req, res, next) {
   }
 }
 
-export async function deleteAdminUser(req, res, next) {
+async function deleteAdminUser(req, res, next) {
   try {
     const userId = toObjectId(req.params.id);
     if (!userId) {
@@ -342,7 +342,7 @@ export async function deleteAdminUser(req, res, next) {
   }
 }
 
-export async function sendAdminNotification(req, res, next) {
+async function sendAdminNotification(req, res, next) {
   try {
     const {
       message,
@@ -423,7 +423,7 @@ export async function sendAdminNotification(req, res, next) {
   }
 }
 
-export async function listAdminFeedbacks(req, res, next) {
+async function listAdminFeedbacks(req, res, next) {
   try {
     const search = (req.query?.search || "").trim();
     const { page, limit, skip } = getPagination(req.query);
@@ -464,3 +464,7 @@ export async function listAdminFeedbacks(req, res, next) {
     next(err);
   }
 }
+
+module.exports = { listAdminUsers, getAdminUserPosts, getAdminQuestionReplies, listAdminQuestions, listAdminComments, deleteAdminQuestion, deleteAdminComment, deleteAdminUser, sendAdminNotification, listAdminFeedbacks, requireAdmin };
+
+

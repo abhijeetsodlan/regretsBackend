@@ -1,4 +1,4 @@
-import mongoose from "mongoose";
+const mongoose = require("mongoose");
 
 const NightRoomLikeSchema = new mongoose.Schema(
   {
@@ -10,4 +10,8 @@ const NightRoomLikeSchema = new mongoose.Schema(
 
 NightRoomLikeSchema.index({ post: 1, user: 1 }, { unique: true });
 
-export const NightRoomLike = mongoose.model("NightRoomLike", NightRoomLikeSchema);
+const NightRoomLike = mongoose.model("NightRoomLike", NightRoomLikeSchema);
+
+module.exports = { NightRoomLike };
+
+

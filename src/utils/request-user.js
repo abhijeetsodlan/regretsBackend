@@ -1,6 +1,6 @@
-import { User } from "../models/user.model.js";
+const { User } = require("../models/user.model.js");
 
-export async function resolveCurrentUser(req) {
+async function resolveCurrentUser(req) {
   if (req.user) {
     return req.user;
   }
@@ -17,4 +17,7 @@ export async function resolveCurrentUser(req) {
 
   return User.findOne({ email });
 }
+
+module.exports = { resolveCurrentUser };
+
 

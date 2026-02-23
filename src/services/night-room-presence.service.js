@@ -10,7 +10,7 @@ function cleanup(now = Date.now()) {
   }
 }
 
-export function touchNightRoomSession(sessionId) {
+function touchNightRoomSession(sessionId) {
   if (!sessionId) {
     return;
   }
@@ -19,14 +19,18 @@ export function touchNightRoomSession(sessionId) {
   sessions.set(String(sessionId), now);
 }
 
-export function leaveNightRoomSession(sessionId) {
+function leaveNightRoomSession(sessionId) {
   if (!sessionId) {
     return;
   }
   sessions.delete(String(sessionId));
 }
 
-export function getNightRoomActiveUsersCount() {
+function getNightRoomActiveUsersCount() {
   cleanup(Date.now());
   return sessions.size;
 }
+
+module.exports = { touchNightRoomSession, leaveNightRoomSession, getNightRoomActiveUsersCount };
+
+

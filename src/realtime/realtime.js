@@ -1,5 +1,5 @@
-import { WebSocketServer } from "ws";
-import { verifyToken } from "../utils/token.js";
+const { WebSocketServer } = require("ws");
+const { verifyToken } = require("../utils/token.js");
 
 const userSockets = new Map();
 const allSockets = new Set();
@@ -35,7 +35,7 @@ function safeSend(socket, payload) {
   }
 }
 
-export function emitNotificationToUser(userId, notification) {
+function emitNotificationToUser(userId, notification) {
   const sockets = userSockets.get(String(userId));
   if (!sockets || sockets.size === 0) {
     return;
@@ -48,7 +48,7 @@ export function emitNotificationToUser(userId, notification) {
   sockets.forEach((socket) => safeSend(socket, payload));
 }
 
-export function emitQuestionCreated(question) {
+function emitQuestionCreated(question) {
   const payload = {
     type: "question:new",
     question
@@ -56,7 +56,7 @@ export function emitQuestionCreated(question) {
   allSockets.forEach((socket) => safeSend(socket, payload));
 }
 
-export function attachRealtime(server) {
+function attachRealtime(server) {
   const wss = new WebSocketServer({ server, path: "/ws" });
 
   wss.on("connection", (socket, req) => {
@@ -87,3 +87,7 @@ export function attachRealtime(server) {
 
   return wss;
 }
+
+module.exports = { emitNotificationToUser, emitQuestionCreated, attachRealtime };
+
+

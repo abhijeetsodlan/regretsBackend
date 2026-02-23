@@ -20,6 +20,24 @@ function buildFrontendRedirect(frontendBaseUrl, payload = {}) {
   return redirectUrl.toString();
 }
 
+function resolveFrontendBaseUrl(req, fallbackBaseUrl) {
+  const state = typeof req.query.state === "string" ? req.query.state.trim() : "";
+  if (!state) {
+    return fallbackBaseUrl;
+  }
+
+  try {
+    const candidate = new URL(state);
+    if (candidate.protocol === "http:" || candidate.protocol === "https:") {
+      return candidate.origin;
+    }
+  } catch {
+    // Ignore invalid state and use configured fallback.
+  }
+
+  return fallbackBaseUrl;
+}
+
 async function startGoogleAuth(req, res, next) {
   try {
     const { clientId, callbackUrl, frontendBaseUrl } = getAuthConfig();
@@ -50,6 +68,7 @@ async function startGoogleAuth(req, res, next) {
 async function googleCallback(req, res, next) {
   try {
     const { clientId, clientSecret, callbackUrl, frontendBaseUrl } = getAuthConfig();
+    const callbackFrontendBaseUrl = resolveFrontendBaseUrl(req, frontendBaseUrl);
     if (!clientId || !clientSecret) {
       return res.status(500).json({
         message: "Google auth is not configured. Set GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET in backend .env"
@@ -59,7 +78,7 @@ async function googleCallback(req, res, next) {
     const code = typeof req.query.code === "string" ? req.query.code : "";
     if (!code) {
       return res.redirect(
-        buildFrontendRedirect(frontendBaseUrl, { error: "google_auth_failed" })
+        buildFrontendRedirect(callbackFrontendBaseUrl, { error: "google_auth_failed" })
       );
     }
 
@@ -77,7 +96,7 @@ async function googleCallback(req, res, next) {
 
     if (!tokenResp.ok) {
       return res.redirect(
-        buildFrontendRedirect(frontendBaseUrl, { error: "google_token_exchange_failed" })
+        buildFrontendRedirect(callbackFrontendBaseUrl, { error: "google_token_exchange_failed" })
       );
     }
 
@@ -85,7 +104,7 @@ async function googleCallback(req, res, next) {
     const accessToken = tokenData.access_token;
     if (!accessToken) {
       return res.redirect(
-        buildFrontendRedirect(frontendBaseUrl, { error: "google_access_token_missing" })
+        buildFrontendRedirect(callbackFrontendBaseUrl, { error: "google_access_token_missing" })
       );
     }
 
@@ -94,7 +113,7 @@ async function googleCallback(req, res, next) {
     });
     if (!profileResp.ok) {
       return res.redirect(
-        buildFrontendRedirect(frontendBaseUrl, { error: "google_profile_fetch_failed" })
+        buildFrontendRedirect(callbackFrontendBaseUrl, { error: "google_profile_fetch_failed" })
       );
     }
 
@@ -107,7 +126,7 @@ async function googleCallback(req, res, next) {
 
     if (!email) {
       return res.redirect(
-        buildFrontendRedirect(frontendBaseUrl, { error: "google_email_missing" })
+        buildFrontendRedirect(callbackFrontendBaseUrl, { error: "google_email_missing" })
       );
     }
 
@@ -134,7 +153,7 @@ async function googleCallback(req, res, next) {
     });
 
     return res.redirect(
-      buildFrontendRedirect(frontendBaseUrl, {
+      buildFrontendRedirect(callbackFrontendBaseUrl, {
         token,
         name: user.name,
         email: user.email

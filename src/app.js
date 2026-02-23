@@ -15,19 +15,69 @@ const adminRoutes = require("./routes/admin.routes.js");
 const nightRoomRoutes = require("./routes/night-room.routes.js");
 const { notFound, errorHandler } = require("./middlewares/errorHandler.js");
 
-function createServer() {
-  const app = express();
-  const allowedOrigins = (process.env.CORS_ORIGIN || "http://localhost:5173")
+function normalizeOrigin(value) {
+  return String(value || "").trim().replace(/\/+$/, "");
+}
+
+function getAllowedOrigins() {
+  const configured = process.env.CORS_ORIGIN || "";
+  const frontendUrl = process.env.FRONTEND_URL || "";
+
+  const combined = [configured, frontendUrl]
+    .join(",")
     .split(",")
-    .map((value) => value.trim())
+    .map((value) => normalizeOrigin(value))
     .filter(Boolean);
 
-  app.use(
-    cors({
-      origin: allowedOrigins,
-      credentials: true
-    })
-  );
+  const unique = Array.from(new Set(combined));
+  if (unique.length > 0) {
+    return unique;
+  }
+
+  return ["http://localhost:5173"];
+}
+
+function isAllowedOrigin(origin, allowedOrigins) {
+  if (allowedOrigins.includes("*")) {
+    return true;
+  }
+
+  return allowedOrigins.some((allowed) => {
+    if (allowed === origin) {
+      return true;
+    }
+
+    if (!allowed.includes("*")) {
+      return false;
+    }
+
+    const [prefix, suffix] = allowed.split("*");
+    return origin.startsWith(prefix) && origin.endsWith(suffix || "");
+  });
+}
+
+function createServer() {
+  const app = express();
+  const allowedOrigins = getAllowedOrigins();
+  const corsOptions = {
+    origin(origin, callback) {
+      if (!origin) {
+        return callback(null, true);
+      }
+
+      const normalizedOrigin = normalizeOrigin(origin);
+      if (isAllowedOrigin(normalizedOrigin, allowedOrigins)) {
+        return callback(null, true);
+      }
+
+      // Do not throw 500 for disallowed origins; just deny CORS headers.
+      return callback(null, false);
+    },
+    credentials: true
+  };
+
+  app.use(cors(corsOptions));
+  app.options("*", cors(corsOptions));
   app.use(express.json());
   app.use(express.urlencoded({ extended: true }));
 
@@ -54,5 +104,4 @@ function createServer() {
 }
 
 module.exports = { createServer };
-
 

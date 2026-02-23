@@ -1,5 +1,5 @@
-import { Router } from "express";
-import {
+const { Router } = require("express");
+const {
   createQuestion,
   getQuestion,
   listQuestions,
@@ -7,8 +7,8 @@ import {
   trackQuestionShare,
   toggleLikeQuestion,
   updateQuestion
-} from "../controllers/question.controller.js";
-import { optionalAuth, requireAuth } from "../middlewares/auth.js";
+} = require("../controllers/question.controller.js");
+const { optionalAuth, requireAuth } = require("../middlewares/auth.js");
 
 const router = Router();
 
@@ -20,4 +20,6 @@ router.patch("/questions/:id", requireAuth, updateQuestion);
 router.post("/questions/:id/like", requireAuth, toggleLikeQuestion);
 router.post("/questions/:id/share", optionalAuth, trackQuestionShare);
 
-export default router;
+module.exports = router;
+
+

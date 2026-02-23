@@ -1,7 +1,7 @@
-import mongoose from "mongoose";
-import { Item } from "../models/item.model.js";
+const mongoose = require("mongoose");
+const { Item } = require("../models/item.model.js");
 
-export async function createItem(req, res, next) {
+async function createItem(req, res, next) {
   try {
     const { name, description } = req.body || {};
     if (!name || typeof name !== "string" || !name.trim()) {
@@ -14,7 +14,7 @@ export async function createItem(req, res, next) {
   }
 }
 
-export async function listItems(req, res, next) {
+async function listItems(req, res, next) {
   try {
     const items = await Item.find().sort({ createdAt: -1 }).lean();
     res.json(items);
@@ -23,7 +23,7 @@ export async function listItems(req, res, next) {
   }
 }
 
-export async function getItem(req, res, next) {
+async function getItem(req, res, next) {
   try {
     const { id } = req.params;
     if (!mongoose.isValidObjectId(id)) {
@@ -39,7 +39,7 @@ export async function getItem(req, res, next) {
   }
 }
 
-export async function updateItem(req, res, next) {
+async function updateItem(req, res, next) {
   try {
     const { id } = req.params;
     if (!mongoose.isValidObjectId(id)) {
@@ -69,7 +69,7 @@ export async function updateItem(req, res, next) {
   }
 }
 
-export async function deleteItem(req, res, next) {
+async function deleteItem(req, res, next) {
   try {
     const { id } = req.params;
     if (!mongoose.isValidObjectId(id)) {
@@ -84,3 +84,7 @@ export async function deleteItem(req, res, next) {
     next(e);
   }
 }
+
+module.exports = { createItem, listItems, getItem, updateItem, deleteItem };
+
+

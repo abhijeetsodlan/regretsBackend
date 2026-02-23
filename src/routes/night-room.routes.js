@@ -1,5 +1,5 @@
-import { Router } from "express";
-import {
+const { Router } = require("express");
+const {
   createNightRoomPost,
   createNightRoomReply,
   enterNightRoom,
@@ -14,9 +14,9 @@ import {
   listNightRoomReplies,
   toggleNightRoomPostLike,
   updateAdminNightRoomSetting
-} from "../controllers/night-room.controller.js";
-import { optionalAuth, requireAuth } from "../middlewares/auth.js";
-import { requireAdmin } from "../controllers/admin.controller.js";
+} = require("../controllers/night-room.controller.js");
+const { optionalAuth, requireAuth } = require("../middlewares/auth.js");
+const { requireAdmin } = require("../controllers/admin.controller.js");
 
 const router = Router();
 
@@ -36,4 +36,6 @@ router.get("/admin/night-room/posts/:id/replies", requireAuth, requireAdmin, get
 router.get("/admin/night-room/settings", requireAuth, requireAdmin, getAdminNightRoomSetting);
 router.patch("/admin/night-room/settings", requireAuth, requireAdmin, updateAdminNightRoomSetting);
 
-export default router;
+module.exports = router;
+
+

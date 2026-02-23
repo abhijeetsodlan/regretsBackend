@@ -1,6 +1,6 @@
-import { Feedback } from "../models/feedback.model.js";
+const { Feedback } = require("../models/feedback.model.js");
 
-export async function createFeedback(req, res, next) {
+async function createFeedback(req, res, next) {
   try {
     const { type, message, contact_email } = req.body || {};
 
@@ -31,4 +31,7 @@ export async function createFeedback(req, res, next) {
     next(err);
   }
 }
+
+module.exports = { createFeedback };
+
 

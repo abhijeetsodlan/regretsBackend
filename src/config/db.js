@@ -1,8 +1,8 @@
-import mongoose from "mongoose";
-import { MongoMemoryServer } from "mongodb-memory-server";
+const mongoose = require("mongoose");
+const { MongoMemoryServer } = require("mongodb-memory-server");
 let memoryServer = null;
 
-export async function connectDB() {
+async function connectDB() {
   let uri = process.env.MONGO_URI;
   const useInMemory = process.env.USE_IN_MEMORY === "true" || !uri;
   if (useInMemory) {
@@ -22,3 +22,7 @@ export async function connectDB() {
     });
   }
 }
+
+module.exports = { connectDB };
+
+

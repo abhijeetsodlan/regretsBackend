@@ -1,7 +1,7 @@
-import { Category } from "../models/category.model.js";
-import { ensureDefaultCategories, slugifyCategoryName } from "../services/category.service.js";
+const { Category } = require("../models/category.model.js");
+const { ensureDefaultCategories, slugifyCategoryName } = require("../services/category.service.js");
 
-export async function listCategories(req, res, next) {
+async function listCategories(req, res, next) {
   try {
     await ensureDefaultCategories();
     const categories = await Category.find().sort({ name: 1 }).lean();
@@ -17,7 +17,7 @@ export async function listCategories(req, res, next) {
   }
 }
 
-export async function createCategory(req, res, next) {
+async function createCategory(req, res, next) {
   try {
     const rawName = typeof req.body?.name === "string" ? req.body.name.trim() : "";
     if (!rawName) {
@@ -52,3 +52,7 @@ export async function createCategory(req, res, next) {
     next(err);
   }
 }
+
+module.exports = { listCategories, createCategory };
+
+

@@ -1,14 +1,14 @@
-import mongoose from "mongoose";
-import { Category } from "../models/category.model.js";
-import { Comment } from "../models/comment.model.js";
-import { Like } from "../models/like.model.js";
-import { Question } from "../models/question.model.js";
-import { SavedPost } from "../models/saved-post.model.js";
-import { emitQuestionCreated } from "../realtime/realtime.js";
-import { notifyRegretLiked } from "../services/notification.service.js";
-import { slugifyCategoryName } from "../services/category.service.js";
-import { resolveCurrentUser } from "../utils/request-user.js";
-import { toQuestionDTO } from "../utils/serializers.js";
+const mongoose = require("mongoose");
+const { Category } = require("../models/category.model.js");
+const { Comment } = require("../models/comment.model.js");
+const { Like } = require("../models/like.model.js");
+const { Question } = require("../models/question.model.js");
+const { SavedPost } = require("../models/saved-post.model.js");
+const { emitQuestionCreated } = require("../realtime/realtime.js");
+const { notifyRegretLiked } = require("../services/notification.service.js");
+const { slugifyCategoryName } = require("../services/category.service.js");
+const { resolveCurrentUser } = require("../utils/request-user.js");
+const { toQuestionDTO } = require("../utils/serializers.js");
 
 function toObjectId(value) {
   return mongoose.isValidObjectId(value) ? new mongoose.Types.ObjectId(value) : null;
@@ -216,7 +216,7 @@ async function getTopRegretOfTheDay(currentUser) {
   };
 }
 
-export async function listQuestions(req, res, next) {
+async function listQuestions(req, res, next) {
   try {
     const currentUser = await resolveCurrentUser(req);
     const questions = await Question.find()
@@ -234,7 +234,7 @@ export async function listQuestions(req, res, next) {
   }
 }
 
-export async function listQuestionsByCategory(req, res, next) {
+async function listQuestionsByCategory(req, res, next) {
   try {
     const rawCategoryId = req.params.categoryId;
     let category = null;
@@ -266,7 +266,7 @@ export async function listQuestionsByCategory(req, res, next) {
   }
 }
 
-export async function getQuestion(req, res, next) {
+async function getQuestion(req, res, next) {
   try {
     const id = toObjectId(req.params.id);
     if (!id) {
@@ -302,7 +302,7 @@ export async function getQuestion(req, res, next) {
   }
 }
 
-export async function createQuestion(req, res, next) {
+async function createQuestion(req, res, next) {
   try {
     const { title, category_id, category_name } = req.body || {};
     const isAnonymous = req.body?.is_anonymous === 1 || req.body?.is_anonymous === true;
@@ -344,7 +344,7 @@ export async function createQuestion(req, res, next) {
   }
 }
 
-export async function updateQuestion(req, res, next) {
+async function updateQuestion(req, res, next) {
   try {
     const questionId = toObjectId(req.params.id);
     if (!questionId) {
@@ -386,7 +386,7 @@ export async function updateQuestion(req, res, next) {
   }
 }
 
-export async function trackQuestionShare(req, res, next) {
+async function trackQuestionShare(req, res, next) {
   try {
     const questionId = toObjectId(req.params.id);
     if (!questionId) {
@@ -414,7 +414,7 @@ export async function trackQuestionShare(req, res, next) {
   }
 }
 
-export async function toggleLikeQuestion(req, res, next) {
+async function toggleLikeQuestion(req, res, next) {
   try {
     const questionId = toObjectId(req.params.id);
     if (!questionId) {
@@ -443,3 +443,7 @@ export async function toggleLikeQuestion(req, res, next) {
     next(err);
   }
 }
+
+module.exports = { listQuestions, listQuestionsByCategory, getQuestion, createQuestion, updateQuestion, trackQuestionShare, toggleLikeQuestion };
+
+

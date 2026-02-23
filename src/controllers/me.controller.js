@@ -1,4 +1,4 @@
-export async function getMe(req, res, next) {
+async function getMe(req, res, next) {
   try {
     res.json({
       user: {
@@ -13,7 +13,7 @@ export async function getMe(req, res, next) {
   }
 }
 
-export async function updateMyAvatar(req, res, next) {
+async function updateMyAvatar(req, res, next) {
   try {
     const { avatar } = req.body || {};
     if (!avatar || typeof avatar !== "string" || !avatar.trim()) {
@@ -41,7 +41,7 @@ export async function updateMyAvatar(req, res, next) {
   }
 }
 
-export async function updateMe(req, res, next) {
+async function updateMe(req, res, next) {
   try {
     const { name } = req.body || {};
     if (!name || typeof name !== "string" || !name.trim()) {
@@ -68,3 +68,7 @@ export async function updateMe(req, res, next) {
     next(err);
   }
 }
+
+module.exports = { getMe, updateMyAvatar, updateMe };
+
+

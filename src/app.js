@@ -1,21 +1,21 @@
-import express from "express";
-import cors from "cors";
-import itemRoutes from "./routes/item.routes.js";
-import authRoutes from "./routes/auth.routes.js";
-import categoryRoutes from "./routes/category.routes.js";
-import questionRoutes from "./routes/question.routes.js";
-import commentRoutes from "./routes/comment.routes.js";
-import profileRoutes from "./routes/profile.routes.js";
-import sessionRoutes from "./routes/session.routes.js";
-import sanctumRoutes from "./routes/sanctum.routes.js";
-import notificationRoutes from "./routes/notification.routes.js";
-import feedbackRoutes from "./routes/feedback.routes.js";
-import meRoutes from "./routes/me.routes.js";
-import adminRoutes from "./routes/admin.routes.js";
-import nightRoomRoutes from "./routes/night-room.routes.js";
-import { notFound, errorHandler } from "./middlewares/errorHandler.js";
+const express = require("express");
+const cors = require("cors");
+const itemRoutes = require("./routes/item.routes.js");
+const authRoutes = require("./routes/auth.routes.js");
+const categoryRoutes = require("./routes/category.routes.js");
+const questionRoutes = require("./routes/question.routes.js");
+const commentRoutes = require("./routes/comment.routes.js");
+const profileRoutes = require("./routes/profile.routes.js");
+const sessionRoutes = require("./routes/session.routes.js");
+const sanctumRoutes = require("./routes/sanctum.routes.js");
+const notificationRoutes = require("./routes/notification.routes.js");
+const feedbackRoutes = require("./routes/feedback.routes.js");
+const meRoutes = require("./routes/me.routes.js");
+const adminRoutes = require("./routes/admin.routes.js");
+const nightRoomRoutes = require("./routes/night-room.routes.js");
+const { notFound, errorHandler } = require("./middlewares/errorHandler.js");
 
-export function createServer() {
+function createServer() {
   const app = express();
   const allowedOrigins = (process.env.CORS_ORIGIN || "http://localhost:5173")
     .split(",")
@@ -52,3 +52,7 @@ export function createServer() {
   app.use(errorHandler);
   return app;
 }
+
+module.exports = { createServer };
+
+

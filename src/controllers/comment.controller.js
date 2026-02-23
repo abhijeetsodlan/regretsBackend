@@ -1,14 +1,14 @@
-import mongoose from "mongoose";
-import { Comment } from "../models/comment.model.js";
-import { Question } from "../models/question.model.js";
-import { notifyOnComment } from "../services/notification.service.js";
-import { toCommentDTO } from "../utils/serializers.js";
+const mongoose = require("mongoose");
+const { Comment } = require("../models/comment.model.js");
+const { Question } = require("../models/question.model.js");
+const { notifyOnComment } = require("../services/notification.service.js");
+const { toCommentDTO } = require("../utils/serializers.js");
 
 function toObjectId(value) {
   return mongoose.isValidObjectId(value) ? new mongoose.Types.ObjectId(value) : null;
 }
 
-export async function listCommentsForQuestion(req, res, next) {
+async function listCommentsForQuestion(req, res, next) {
   try {
     const questionId = toObjectId(req.params.questionId);
     if (!questionId) {
@@ -26,7 +26,7 @@ export async function listCommentsForQuestion(req, res, next) {
   }
 }
 
-export async function createComment(req, res, next) {
+async function createComment(req, res, next) {
   try {
     const { title, question_id } = req.body || {};
     const isAnonymous = req.body?.is_anonymous === 1 || req.body?.is_anonymous === true;
@@ -69,3 +69,7 @@ export async function createComment(req, res, next) {
     next(err);
   }
 }
+
+module.exports = { listCommentsForQuestion, createComment };
+
+

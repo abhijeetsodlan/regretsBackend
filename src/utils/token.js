@@ -1,4 +1,4 @@
-import crypto from "crypto";
+const crypto = require("crypto");
 
 function base64urlEncode(value) {
   return Buffer.from(value)
@@ -25,7 +25,7 @@ function sign(input, secret) {
     .replace(/\//g, "_");
 }
 
-export function createToken(payload, ttlSeconds = 60 * 60 * 24 * 30) {
+function createToken(payload, ttlSeconds = 60 * 60 * 24 * 30) {
   const secret = process.env.JWT_SECRET || "local-dev-secret";
   const now = Math.floor(Date.now() / 1000);
   const body = { ...payload, iat: now, exp: now + ttlSeconds };
@@ -35,7 +35,7 @@ export function createToken(payload, ttlSeconds = 60 * 60 * 24 * 30) {
   return `${headerPart}.${payloadPart}.${signaturePart}`;
 }
 
-export function verifyToken(token) {
+function verifyToken(token) {
   try {
     const secret = process.env.JWT_SECRET || "local-dev-secret";
     const parts = token.split(".");
@@ -58,3 +58,7 @@ export function verifyToken(token) {
     return null;
   }
 }
+
+module.exports = { createToken, verifyToken };
+
+

@@ -1,5 +1,5 @@
-import mongoose from "mongoose";
-import { Notification } from "../models/notification.model.js";
+const mongoose = require("mongoose");
+const { Notification } = require("../models/notification.model.js");
 
 function truncate(text, maxLength) {
   if (!text || typeof text !== "string") {
@@ -70,7 +70,7 @@ function toObjectId(value) {
   return mongoose.isValidObjectId(value) ? new mongoose.Types.ObjectId(value) : null;
 }
 
-export async function listNotifications(req, res, next) {
+async function listNotifications(req, res, next) {
   try {
     const rows = await Notification.find({ user: req.user._id })
       .populate("actor", "name email")
@@ -94,7 +94,7 @@ export async function listNotifications(req, res, next) {
   }
 }
 
-export async function markNotificationRead(req, res, next) {
+async function markNotificationRead(req, res, next) {
   try {
     const notificationId = toObjectId(req.params.id);
     if (!notificationId) {
@@ -121,7 +121,7 @@ export async function markNotificationRead(req, res, next) {
   }
 }
 
-export async function markAllNotificationsRead(req, res, next) {
+async function markAllNotificationsRead(req, res, next) {
   try {
     await Notification.updateMany(
       { user: req.user._id, is_read: false },
@@ -133,7 +133,7 @@ export async function markAllNotificationsRead(req, res, next) {
   }
 }
 
-export async function clearNotifications(req, res, next) {
+async function clearNotifications(req, res, next) {
   try {
     const result = await Notification.deleteMany({ user: req.user._id });
     res.json({ success: true, deleted_count: result.deletedCount || 0 });
@@ -141,3 +141,7 @@ export async function clearNotifications(req, res, next) {
     next(err);
   }
 }
+
+module.exports = { listNotifications, markNotificationRead, markAllNotificationsRead, clearNotifications };
+
+

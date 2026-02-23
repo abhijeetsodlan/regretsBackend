@@ -1,5 +1,5 @@
-import { User } from "../models/user.model.js";
-import { verifyToken } from "../utils/token.js";
+const { User } = require("../models/user.model.js");
+const { verifyToken } = require("../utils/token.js");
 
 function extractBearerToken(headerValue) {
   if (!headerValue || typeof headerValue !== "string") {
@@ -25,7 +25,7 @@ async function getUserFromToken(req) {
   return user || null;
 }
 
-export async function optionalAuth(req, res, next) {
+async function optionalAuth(req, res, next) {
   try {
     req.user = await getUserFromToken(req);
     next();
@@ -34,7 +34,7 @@ export async function optionalAuth(req, res, next) {
   }
 }
 
-export async function requireAuth(req, res, next) {
+async function requireAuth(req, res, next) {
   try {
     const user = await getUserFromToken(req);
     if (!user) {
@@ -46,4 +46,7 @@ export async function requireAuth(req, res, next) {
     next(err);
   }
 }
+
+module.exports = { optionalAuth, requireAuth };
+
 

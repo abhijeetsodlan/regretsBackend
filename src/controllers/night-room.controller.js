@@ -1,15 +1,15 @@
-import mongoose from "mongoose";
-import { NightRoomLike } from "../models/night-room-like.model.js";
-import { NightRoomPost } from "../models/night-room-post.model.js";
-import { NightRoomReply } from "../models/night-room-reply.model.js";
-import { NightRoomSetting } from "../models/night-room-setting.model.js";
-import {
+const mongoose = require("mongoose");
+const { NightRoomLike } = require("../models/night-room-like.model.js");
+const { NightRoomPost } = require("../models/night-room-post.model.js");
+const { NightRoomReply } = require("../models/night-room-reply.model.js");
+const { NightRoomSetting } = require("../models/night-room-setting.model.js");
+const {
   getNightRoomActiveUsersCount,
   leaveNightRoomSession,
   touchNightRoomSession
-} from "../services/night-room-presence.service.js";
-import { toNightRoomPostDTO, toNightRoomReplyDTO } from "../utils/serializers.js";
-import { getNightRoomWindow, isNightRoomOpen } from "../utils/night-room.js";
+} = require("../services/night-room-presence.service.js");
+const { toNightRoomPostDTO, toNightRoomReplyDTO } = require("../utils/serializers.js");
+const { getNightRoomWindow, isNightRoomOpen } = require("../utils/night-room.js");
 
 function toObjectId(value) {
   return mongoose.isValidObjectId(value) ? new mongoose.Types.ObjectId(value) : null;
@@ -140,7 +140,7 @@ async function getScopedNightRoomPost(postId, roomState) {
   }).lean();
 }
 
-export async function getNightRoomStatus(req, res, next) {
+async function getNightRoomStatus(req, res, next) {
   try {
     maybeTouchPresence(req);
     res.set("Cache-Control", "no-store");
@@ -159,7 +159,7 @@ export async function getNightRoomStatus(req, res, next) {
   }
 }
 
-export async function enterNightRoom(req, res, next) {
+async function enterNightRoom(req, res, next) {
   try {
     const sessionId = getPresenceSessionId(req);
     if (!sessionId) {
@@ -173,7 +173,7 @@ export async function enterNightRoom(req, res, next) {
   }
 }
 
-export async function heartbeatNightRoom(req, res, next) {
+async function heartbeatNightRoom(req, res, next) {
   try {
     const sessionId = getPresenceSessionId(req);
     if (!sessionId) {
@@ -187,7 +187,7 @@ export async function heartbeatNightRoom(req, res, next) {
   }
 }
 
-export async function leaveNightRoom(req, res, next) {
+async function leaveNightRoom(req, res, next) {
   try {
     const sessionId = getPresenceSessionId(req);
     if (sessionId) {
@@ -199,7 +199,7 @@ export async function leaveNightRoom(req, res, next) {
   }
 }
 
-export async function listNightRoomPosts(req, res, next) {
+async function listNightRoomPosts(req, res, next) {
   try {
     maybeTouchPresence(req);
     res.set("Cache-Control", "no-store");
@@ -242,7 +242,7 @@ export async function listNightRoomPosts(req, res, next) {
   }
 }
 
-export async function getNightRoomPost(req, res, next) {
+async function getNightRoomPost(req, res, next) {
   try {
     maybeTouchPresence(req);
     res.set("Cache-Control", "no-store");
@@ -286,7 +286,7 @@ export async function getNightRoomPost(req, res, next) {
   }
 }
 
-export async function createNightRoomPost(req, res, next) {
+async function createNightRoomPost(req, res, next) {
   try {
     const roomState = await getResolvedNightRoomState();
     if (!validateOpenOrReject(res, roomState)) {
@@ -319,7 +319,7 @@ export async function createNightRoomPost(req, res, next) {
   }
 }
 
-export async function toggleNightRoomPostLike(req, res, next) {
+async function toggleNightRoomPostLike(req, res, next) {
   try {
     const roomState = await getResolvedNightRoomState();
     if (!validateOpenOrReject(res, roomState)) {
@@ -353,7 +353,7 @@ export async function toggleNightRoomPostLike(req, res, next) {
   }
 }
 
-export async function listNightRoomReplies(req, res, next) {
+async function listNightRoomReplies(req, res, next) {
   try {
     const roomState = await getResolvedNightRoomState();
     if (!roomState.isOpen) {
@@ -381,7 +381,7 @@ export async function listNightRoomReplies(req, res, next) {
   }
 }
 
-export async function createNightRoomReply(req, res, next) {
+async function createNightRoomReply(req, res, next) {
   try {
     const roomState = await getResolvedNightRoomState();
     if (!validateOpenOrReject(res, roomState)) {
@@ -418,7 +418,7 @@ export async function createNightRoomReply(req, res, next) {
   }
 }
 
-export async function listAdminNightRoomPosts(req, res, next) {
+async function listAdminNightRoomPosts(req, res, next) {
   try {
     const search = String(req.query?.search || "").trim();
     const pageRaw = Number.parseInt(req.query?.page, 10);
@@ -481,7 +481,7 @@ export async function listAdminNightRoomPosts(req, res, next) {
   }
 }
 
-export async function getAdminNightRoomPostReplies(req, res, next) {
+async function getAdminNightRoomPostReplies(req, res, next) {
   try {
     const postId = toObjectId(req.params.id);
     if (!postId) {
@@ -533,7 +533,7 @@ export async function getAdminNightRoomPostReplies(req, res, next) {
   }
 }
 
-export async function getAdminNightRoomSetting(req, res, next) {
+async function getAdminNightRoomSetting(req, res, next) {
   try {
     const setting = await getNightRoomSetting();
     const roomState = await getResolvedNightRoomState();
@@ -549,7 +549,7 @@ export async function getAdminNightRoomSetting(req, res, next) {
   }
 }
 
-export async function updateAdminNightRoomSetting(req, res, next) {
+async function updateAdminNightRoomSetting(req, res, next) {
   try {
     const mode = String(req.body?.mode || "").trim();
     if (!["auto", "force_on", "force_off"].includes(mode)) {
@@ -582,3 +582,7 @@ export async function updateAdminNightRoomSetting(req, res, next) {
     next(err);
   }
 }
+
+module.exports = { getNightRoomStatus, enterNightRoom, heartbeatNightRoom, leaveNightRoom, listNightRoomPosts, getNightRoomPost, createNightRoomPost, toggleNightRoomPostLike, listNightRoomReplies, createNightRoomReply, listAdminNightRoomPosts, getAdminNightRoomPostReplies, getAdminNightRoomSetting, updateAdminNightRoomSetting };
+
+

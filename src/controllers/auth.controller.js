@@ -1,5 +1,5 @@
-import { User } from "../models/user.model.js";
-import { createToken } from "../utils/token.js";
+const { User } = require("../models/user.model.js");
+const { createToken } = require("../utils/token.js");
 
 function getAuthConfig() {
   return {
@@ -20,7 +20,7 @@ function buildFrontendRedirect(frontendBaseUrl, payload = {}) {
   return redirectUrl.toString();
 }
 
-export async function startGoogleAuth(req, res, next) {
+async function startGoogleAuth(req, res, next) {
   try {
     const { clientId, callbackUrl, frontendBaseUrl } = getAuthConfig();
     if (!clientId) {
@@ -47,7 +47,7 @@ export async function startGoogleAuth(req, res, next) {
   }
 }
 
-export async function googleCallback(req, res, next) {
+async function googleCallback(req, res, next) {
   try {
     const { clientId, clientSecret, callbackUrl, frontendBaseUrl } = getAuthConfig();
     if (!clientId || !clientSecret) {
@@ -144,3 +144,7 @@ export async function googleCallback(req, res, next) {
     next(err);
   }
 }
+
+module.exports = { startGoogleAuth, googleCallback };
+
+

@@ -1,5 +1,5 @@
-import { Router } from "express";
-import {
+const { Router } = require("express");
+const {
   deleteAdminComment,
   deleteAdminQuestion,
   deleteAdminUser,
@@ -11,8 +11,8 @@ import {
   listAdminUsers,
   requireAdmin,
   sendAdminNotification
-} from "../controllers/admin.controller.js";
-import { requireAuth } from "../middlewares/auth.js";
+} = require("../controllers/admin.controller.js");
+const { requireAuth } = require("../middlewares/auth.js");
 
 const router = Router();
 
@@ -29,4 +29,6 @@ router.delete("/admin/questions/:id", deleteAdminQuestion);
 router.delete("/admin/comments/:id", deleteAdminComment);
 router.post("/admin/notify", sendAdminNotification);
 
-export default router;
+module.exports = router;
+
+

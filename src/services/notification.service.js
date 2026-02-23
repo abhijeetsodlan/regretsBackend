@@ -1,5 +1,5 @@
-import { Notification } from "../models/notification.model.js";
-import { emitNotificationToUser } from "../realtime/realtime.js";
+const { Notification } = require("../models/notification.model.js");
+const { emitNotificationToUser } = require("../realtime/realtime.js");
 
 function truncate(text, maxLength) {
   if (!text || typeof text !== "string") {
@@ -54,7 +54,7 @@ async function createNotification({
   return notification;
 }
 
-export async function notifyRegretLiked({ question, actor }) {
+async function notifyRegretLiked({ question, actor }) {
   if (!question?.user || !actor?._id) {
     return;
   }
@@ -68,7 +68,7 @@ export async function notifyRegretLiked({ question, actor }) {
   });
 }
 
-export async function notifyOnComment({
+async function notifyOnComment({
   question,
   actor,
   commentId,
@@ -129,3 +129,7 @@ export async function notifyOnComment({
     });
   });
 }
+
+module.exports = { notifyRegretLiked, notifyOnComment };
+
+

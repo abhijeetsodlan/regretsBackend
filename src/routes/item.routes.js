@@ -1,5 +1,5 @@
-import { Router } from "express";
-import { createItem, listItems, getItem, updateItem, deleteItem } from "../controllers/item.controller.js";
+const { Router } = require("express");
+const { createItem, listItems, getItem, updateItem, deleteItem } = require("../controllers/item.controller.js");
 
 const router = Router();
 
@@ -9,4 +9,6 @@ router.get("/:id", getItem);
 router.put("/:id", updateItem);
 router.delete("/:id", deleteItem);
 
-export default router;
+module.exports = router;
+
+

@@ -1,13 +1,13 @@
-import dotenv from "dotenv";
-import http from "http";
-import { connectDB } from "./config/db.js";
-import { createServer } from "./app.js";
-import { attachRealtime } from "./realtime/realtime.js";
-import { NightRoomPost } from "./models/night-room-post.model.js";
+const dotenv = require("dotenv");
+const http = require("http");
+const { connectDB } = require("./config/db.js");
+const { createServer } = require("./app.js");
+const { attachRealtime } = require("./realtime/realtime.js");
+const { NightRoomPost } = require("./models/night-room-post.model.js");
 
 dotenv.config();
 
-const port = process.env.PORT ? Number(process.env.PORT) : 3000;
+const port = process.env.PORT;
 
 async function bootstrap() {
   await connectDB();
@@ -29,3 +29,6 @@ bootstrap().catch((err) => {
   console.error("Failed to start server:", err.message || err);
   process.exit(1);
 });
+
+
+

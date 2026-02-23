@@ -1,4 +1,4 @@
-import mongoose from "mongoose";
+const mongoose = require("mongoose");
 
 const FeedbackSchema = new mongoose.Schema(
   {
@@ -16,5 +16,8 @@ const FeedbackSchema = new mongoose.Schema(
 
 FeedbackSchema.index({ createdAt: -1 });
 
-export const Feedback = mongoose.model("Feedback", FeedbackSchema);
+const Feedback = mongoose.model("Feedback", FeedbackSchema);
+
+module.exports = { Feedback };
+
 

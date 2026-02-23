@@ -1,20 +1,20 @@
-import mongoose from "mongoose";
-import { Question } from "../models/question.model.js";
-import { SavedPost } from "../models/saved-post.model.js";
+const mongoose = require("mongoose");
+const { Question } = require("../models/question.model.js");
+const { SavedPost } = require("../models/saved-post.model.js");
 
 function toObjectId(value) {
   return mongoose.isValidObjectId(value) ? new mongoose.Types.ObjectId(value) : null;
 }
 
-export function csrfCookie(req, res) {
+function csrfCookie(req, res) {
   res.status(204).send();
 }
 
-export function logout(req, res) {
+function logout(req, res) {
   res.json({ message: "Logged out" });
 }
 
-export async function savePost(req, res, next) {
+async function savePost(req, res, next) {
   try {
     const questionId = toObjectId(req.body?.question_id);
     if (!questionId) {
@@ -42,4 +42,7 @@ export async function savePost(req, res, next) {
     next(err);
   }
 }
+
+module.exports = { savePost, csrfCookie, logout };
+
 

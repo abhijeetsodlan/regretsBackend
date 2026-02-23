@@ -1,10 +1,11 @@
-import { Router } from "express";
-import { createFeedback } from "../controllers/feedback.controller.js";
-import { optionalAuth } from "../middlewares/auth.js";
+const { Router } = require("express");
+const { createFeedback } = require("../controllers/feedback.controller.js");
+const { optionalAuth } = require("../middlewares/auth.js");
 
 const router = Router();
 
 router.post("/feedback", optionalAuth, createFeedback);
 
-export default router;
+module.exports = router;
+
 

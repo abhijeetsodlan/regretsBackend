@@ -1,12 +1,12 @@
-export const NIGHT_ROOM_OPEN_HOUR = 21;
-export const NIGHT_ROOM_CLOSE_HOUR = 4;
+const NIGHT_ROOM_OPEN_HOUR = 21;
+const NIGHT_ROOM_CLOSE_HOUR = 4;
 
-export function isNightRoomOpen(now = new Date()) {
+function isNightRoomOpen(now = new Date()) {
   const hour = now.getHours();
   return hour >= NIGHT_ROOM_OPEN_HOUR || hour < NIGHT_ROOM_CLOSE_HOUR;
 }
 
-export function getNightRoomWindow(now = new Date()) {
+function getNightRoomWindow(now = new Date()) {
   const current = new Date(now);
   const opensAt = new Date(current);
   const closesAt = new Date(current);
@@ -32,3 +32,7 @@ export function getNightRoomWindow(now = new Date()) {
 
   return { opensAt, closesAt };
 }
+
+module.exports = { isNightRoomOpen, getNightRoomWindow, NIGHT_ROOM_OPEN_HOUR, NIGHT_ROOM_CLOSE_HOUR };
+
+

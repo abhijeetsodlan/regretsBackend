@@ -24,7 +24,7 @@ async function bootstrap() {
   attachRealtime(httpServer);
 
   httpServer.listen(port, () => {
-    console.log(`API is running  on the http://localhost:${port}`);
+    console.log(`API is running  on  http://localhost:${port}`);
   });
 }
 

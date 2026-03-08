@@ -1,5 +1,6 @@
 const dotenv = require("dotenv");
 const http = require("http");
+const { exec } = require("child_process");
 const { connectDB } = require("./config/db.js");
 const { createServer } = require("./app.js");
 const { attachRealtime } = require("./realtime/realtime.js");
@@ -17,6 +18,21 @@ async function bootstrap() {
     // Index may not exist in fresh environments.
   }
   const app = createServer();
+
+  // GitHub CI/CD webhook
+  app.post("/deploy", (req, res) => {
+  console.log("GitHub webhook received. Deploying...");
+
+  exec("sh /home2/statsinf/api.regrets.in/regretsBackend/deploy.sh", (err, stdout, stderr) => {
+    if (err) {
+      console.error(stderr);
+      return res.status(500).send("Deployment failed");
+    }
+
+    console.log(stdout);
+    res.send("Deployment successful");
+  });
+});
   const httpServer = http.createServer(app);
   attachRealtime(httpServer);
 

@@ -6,8 +6,6 @@ const { createServer } = require("./app.js");
 const { attachRealtime } = require("./realtime/realtime.js");
 const { NightRoomPost } = require("./models/night-room-post.model.js");
 
-
-
 dotenv.config();
 
 const port = process.env.PORT;

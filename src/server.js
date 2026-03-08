@@ -8,6 +8,7 @@ const { NightRoomPost } = require("./models/night-room-post.model.js");
 
 dotenv.config();
 
+
 const port = process.env.PORT;
 
 async function bootstrap() {
@@ -37,7 +38,7 @@ async function bootstrap() {
   attachRealtime(httpServer);
 
   httpServer.listen(port, () => {
-    console.log(`API is running and on http://localhost:${port}`);
+    console.log(`API is running  on the http://localhost:${port}`);
   });
 }
 
